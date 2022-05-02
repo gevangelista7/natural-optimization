@@ -29,11 +29,11 @@ if __name__ == "__main__":
                     x_min_sa, J_min_sa, history_sa = simulated_annealing(calcJ=calcJ, x0=x0, N=N, K=K, epsilon=eps,
                                                                          T0=T0)
                     norm_x_sa = np.linalg.norm(x_min_sa)
-                    results[('SA', N, K, eps, T0)] = (J_min_sa, x_min_sa, norm_x_sa)
+                    results[('SA', N, K, eps, T0)] = (J_min_sa, x_min_sa, norm_x_sa, history_sa)
 
                     x_min_fsa, J_min_fsa, history_fsa = fast_sa(calcJ=calcJ, x0=x0, N=N, K=K, epsilon=eps, T0=T0)
                     norm_x_fsa = np.linalg.norm(x_min_sa)
-                    results[('FSA', N, K, eps, T0)] = (J_min_fsa, x_min_fsa, norm_x_fsa)
+                    results[('FSA', N, K, eps, T0)] = (J_min_fsa, x_min_fsa, norm_x_fsa, history_fsa)
 
                     print("{} tentativas realizadas".format(i))
                     if norm_x_fsa < 0.3:
