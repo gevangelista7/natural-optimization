@@ -1,31 +1,7 @@
 import numpy as np
 import numpy.random as rd
 import matplotlib.pyplot as plt
-
-
-def deltaJ(to, origin, J):
-    return J[to] - J[origin]
-
-
-def f_boltz(to, origin, T, J):
-    return np.exp(-deltaJ(to, origin, J)/T)
-
-
-def acept_trans_prob(to, origin, T, J):
-    return min(f_boltz(to, origin, T, J), 1.0)
-
-
-def get_transition_matrix(T, J):
-    l = len(J.items())
-    tm = np.zeros((l, l))
-    for j in range(len(tm)):
-        for i in range(len(tm[0])):
-            if (i == (j+1) % l) or (i == (j-1) % l):
-                tm[i, j] = 0.5 * acept_trans_prob(i+1, j+1, T, J)
-        tm[j, j] = 1 - sum(tm[:, j])
-
-    return tm
-
+from utils import transition_matrix, transition, invariant_vector
 
 if __name__ == "__main__":
     T = 1
@@ -37,7 +13,7 @@ if __name__ == "__main__":
         4: .2
     }
 
-    tm = get_transition_matrix(T, J)
+    tm = transition_matrix(T, J)
     print("Problema original, resolvido em sala:")
     print(tm)
 
@@ -50,25 +26,24 @@ if __name__ == "__main__":
     }
 
     T = 0.1
-    tm = get_transition_matrix(T, J)
+    tm = transition_matrix(T, J)
     print("#### item a ####")
     print("Problema modificado, proposto na lista 2 enviada em 14ABR22:")
     print(tm)
 
     print("#### item b ####")
+    X = 1
+    print("{}o estado: {}".format(1, X))
+    for i in range(3):
+        X = transition(X, tm)
+        print("{}o estado: {}".format(i+2, X))
 
     print("#### item c ####")
     print("O vetor invariante corresponde ao autovetor "
           "\"normalizado\" para somar 1, associado ao autovalor"
           "unitário")
 
-    val, vec = np.linalg.eig(tm)
-    print(val)
-    print(vec)
-
-    idx_unitario = np.where(np.around(val, 1) == 1)[0].item()
-    vec_prob = vec.T[idx_unitario]
-    vec_prob = vec_prob/sum(vec_prob)
+    vec_prob = invariant_vector(tm)
 
     print("Vetor invariante associado a matriz de transição M do item a: v = \n {}".format(vec_prob))
 
@@ -84,7 +59,7 @@ if __name__ == "__main__":
     print("Vetor dos fatores de Boltzmann normalizado: \n{}".format(fb_norm))
     print("Diferenças entre os fatores de Boltzmann e o "
           "vetor de probabilidades: \n{}".format(vec_prob - fb_norm))
-    print("Portanto os vetore são iguais")
+    print("Portanto os vetores são iguais")
 
     print("#### item e ####")
     # Metropolis Algorithm

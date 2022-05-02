@@ -1,31 +1,7 @@
 import numpy as np
 import numpy.random as rd
 import matplotlib.pyplot as plt
-
-
-def deltaJ(to, origin, J):
-    return J[to] - J[origin]
-
-
-def f_boltz(to, origin, T, J):
-    return np.exp(-deltaJ(to, origin, J)/T)
-
-
-def acept_trans_prob(to, origin, T, J):
-    return min(f_boltz(to, origin, T, J), 1.0)
-
-
-def get_transition_matrix(T, J):
-    l = len(J.items())
-    tm = np.zeros((l, l))
-    for j in range(len(tm)):
-        for i in range(len(tm[0])):
-            if (i == (j+1) % l) or (i == (j-1) % l):
-                tm[i, j] = 0.5 * acept_trans_prob(i+1, j+1, T, J)
-        tm[j, j] = 1 - sum(tm[:, j])
-
-    return tm
-
+from utils import  invariant_vector, transition_matrix
 
 J = {
     1: 7,
@@ -85,32 +61,38 @@ if __name__ == "__main__":
     print("X_min = ", x_min, "\nJ_min = ", J_min)
 
     print(" #### item b ####")
-    M5 = get_transition_matrix(5, J)
-
-    val, vec = np.linalg.eig(M5)
-    idx_unit = np.where(np.around(val, 1) == 1)[0].item()
-    vec_prob_M5 = vec.T[idx_unit]
-    vec_prob_M5 = vec_prob_M5/sum(vec_prob_M5)
+    M5 = transition_matrix(5, J)
+    vec_prob_M5 = invariant_vector(M5)
 
     print("M_5 = \n{}".format(M5))
     print("PI_5 = {}".format(vec_prob_M5))
 
-    M10 = get_transition_matrix(10, J)
-    val, vec = np.linalg.eig(M5)
-    idx_unit = np.where(np.around(val, 1) == 1)[0].item()
-    vec_prob_M10 = vec.T[idx_unit]
-    vec_prob_M10 = vec_prob_M10/sum(vec_prob_M10)
+    M10 = transition_matrix(10, J)
+    # val, vec = np.linalg.eig(M5)
+    # idx_unit = np.where(np.around(val, 1) == 1)[0].item()
+    # vec_prob_M10 = vec.T[idx_unit]
+    # vec_prob_M10 = vec_prob_M10/sum(vec_prob_M10)
+    vec_prob_M10 = invariant_vector(M10)
     print("M_10 = \n{}".format(M10))
     print("PI_10 = {}".format(vec_prob_M10))
 
     print(" #### item c ####")
     min_M5 = M5[2, 1]
     min_M10 = M10[2, 1]
-    # transição 2 -> 3, que é a transição de maior diferença de energia
-    # ou seja deltaJmax = Jmax - Jmin
-    # T aumenta a probabilidade da transição ocorrer
-    # min_M10/min_M5 = exp(-deltaJ/T10)/exp(-deltaJ/T5)
-    # min_M10/min_M5 = exp(deltaJ(-1/T10 + 1/T5))
+
+    deltaJmax = 9  # Jmax - Jmin
+    N = 2  # número de transições possíveis
+    T5 = 5
+    T10 = 10
+    p5 = 1 / N * np.exp(-deltaJmax / T5)
+    p10 = 1 / N * np.exp(-deltaJmax / T10)
+
+    # p5/p10 = 1/N*np.exp(-deltaJmax*(1/T5 - 1/T10))
+    # p5/p10 = np.exp(-deltaJmax*(2/T10 - 1/T10)) = np.exp(-deltaJmax*1/T10) = N*p10
+
+    # RESPOSTA:
+    # p5 = N * p10 ** 2
+    print("A relação entre as probabilidade e onúmero de transições possíveis é dado por: p5 = N * p10 ** 2 ")
 
 
 

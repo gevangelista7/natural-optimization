@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.random as rd
 import matplotlib.pyplot as plt
-
+from utils import transition, invariant_vector
 
 if __name__ == "__main__":
     transition_matrix = np.array([[0.50, 0.25, 0.25],
@@ -20,27 +20,18 @@ if __name__ == "__main__":
     ################# item b #################
     p0 = np.array([[0.0, 1.0, 0.0]]).T
 
-
-    def transition(X):
-        transition_vec = transition_matrix.T[X]
-        r = rd.uniform(0, 1)
-        if r < transition_vec[0]:
-            return 0
-        if r < transition_vec[0] + transition_vec[1]:
-            return 1
-        else:
-            return 2
-
-
-    X = 1
-    for _ in range(3):
-        X = transition(X)
-
     print("### ITEM b ###")
+    X = 1
+    print("{}o estado: {}".format(1, X))
+    for i in range(3):
+        X = transition(X, transition_matrix)
+        print("{}o estado: {}".format(i + 2, X))
+
     print("Valor final: {} \n\n".format(X))
 
 
     ################# item c #################
+    print("### ITEM c ###")
     history = []
     episode = []
 
@@ -48,7 +39,7 @@ if __name__ == "__main__":
         X = rd.choice([0, 1, 2])
         episode.append(X)
         for _ in range(3):
-            X = transition(X)
+            X = transition(X, transition_matrix)
             episode.append(X)
 
         history.append(episode)
@@ -69,6 +60,8 @@ if __name__ == "__main__":
         ax[i].set_title("X{}".format(i))
         ax[i].set_xticks((0, 1, 2))
 
-    val, vec = np.linalg.eig(transition_matrix)
-    print("Matriz dos auto vetores:\n {}".format(vec))
+    PI = invariant_vector(transition_matrix)
+    print("Vetor invariante de probabilidades: \n {}".format(PI))
+    print("Para 100 iterações observamos que o algoritmo não necessariamente converge para o esperado em comparação "
+          "com o vetor invariante.")
 
