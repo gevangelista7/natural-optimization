@@ -19,4 +19,4 @@ if __name__ == "__main__":
                                 max_iterations=max_iterations, alpha=alpha, epsilon=eps, delta=delta)
 
     plot_curves_da(history_J, history_D, history_T, i, "NC = {}, P = {} ".format(NC, P))
-    plot_points_da(data_vectors, Y, "NC = {}".format(NC))
+    plot_points_da(data_vectors, Y, "NC = {}".format(NC), with_voronoi=True)
