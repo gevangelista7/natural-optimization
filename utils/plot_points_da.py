@@ -13,7 +13,7 @@ def plot_points_da(data_vectors, Y, title, with_voronoi=False, Yvor=None, xlim=(
 
     plt.title(title)
     plt.plot(data_vectors[:, 0], data_vectors[:, 1], 'k.', label="X (data vector)")
-    plt.plot(Y[:, 0], Y[:, 1], 'r.', markersize=20, label="Y")
+    plt.plot(Y[:, 0], Y[:, 1], 'r.', markersize=8, label="Y")
     if xlim[0] is not None:
         plt.xlim(xlim)
     if ylim[0] is not None:
