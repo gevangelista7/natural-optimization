@@ -1,6 +1,8 @@
 
 import unittest
 import torch as t
+from GLAStep import GLAStep
+from utils import generate_point_cloud_with_optimum
 from MutationMCL import MutationMCL
 from MutationMPL import MutationMPL
 from DiscreteXUniformS import DiscreteXUniformS
@@ -177,6 +179,16 @@ class MigrationTest(unittest.TestCase):
         mig.execute(1)
         print(survivors)
 
+
+class GLAStepTest(unittest.TestCase):
+    n_cluster = 4
+    X, _, _, _ = generate_point_cloud_with_optimum(n_clusters=n_cluster, core_points=10)
+    X = t.tensor(X)
+    Y = t.normal(0, 1, (8, 4, 2))
+    final = t.empty(Y.shape)
+
+    stepper = GLAStep(data_vector=X, n_clusters=n_cluster, original=Y, neighbor=final)
+    stepper.update_neighbors()
 
 
 
