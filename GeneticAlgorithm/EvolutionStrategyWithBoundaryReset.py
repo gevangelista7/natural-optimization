@@ -1,7 +1,6 @@
 
 import numpy as np
 import torch as t
-import random
 from .MutationMCL import MutationMCL
 from .DetSurvivorsSelectionMCL import DetSurvivorsSelectionMCL
 from .DiscreteXUniformS import DiscreteXUniformS
@@ -9,7 +8,7 @@ from .Register import GARegister, DataPrep, FinalResultProcessor
 from .FitnessFunctionWithCounter import FitnessFunctionWithCounter
 
 
-class EvolutionStrategy:
+class EvolutionStrategyWithBoundaryReset:
     t.set_grad_enabled(False)
 
     def __init__(self,
@@ -22,13 +21,9 @@ class EvolutionStrategy:
                  filename,
                  dirname=None,
                  until_max_eval=False,
-                 seed=1,
                  _tau1=None, _tau2=None, _eps0=None, pop0_dispersion=1, x_lim=(-30, 30)):
 
         self.device = "cuda" if t.has_cuda else "cpu"
-        t.manual_seed(seed)
-        np.random.seed(seed)
-        random.seed(seed)
 
         self.individual_dimension = individual_dimension
         self.tgt_fitness = tgt_fitness
@@ -78,10 +73,12 @@ class EvolutionStrategy:
                                         data_header=self.data_processor.header)
 
         self.final_result_registry = FinalResultProcessor(offspring_fitness=self.offspring_fitness,
-                                                          tgt_fitness=self.tgt_fitness,
-                                                          seed=seed,
-                                                          _lambda=_lambda,
-                                                          _mu=_mu)
+                                                          tgt_fitness=self.tgt_fitness)
+
+    def reset_bad_individuals(self):
+        for idx_idv in range(self.population.shape[0]):
+            if (abs(self.population_x[idx_idv]) == self.x_lim[-1]).any():
+                self.population_x[idx_idv].normal_(0, self.pop0_dispersion)
 
     def run(self):
         gen_n = 0
@@ -94,6 +91,9 @@ class EvolutionStrategy:
             iter_result = self.data_processor.processed_result(gen_n, self.fitness_function.counter)
             self.final_result_registry.process_iter(iter_result)
             self.iter_register.data_entry([iter_result])
+
+            if gen_n % 100 == 0:
+                self.reset_bad_individuals()
 
             if t.mean(self.offspring_fitness) >= self.tgt_fitness:
                 if not self.until_max_eval:

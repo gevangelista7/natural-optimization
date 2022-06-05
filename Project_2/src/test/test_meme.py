@@ -1,5 +1,5 @@
 import torch as t
-from GeneticAlgorithm import EvolutionStrategy, GAEvolutionPlot
+from GeneticAlgorithm import EvolutionStrategyMemeticClustering, GAEvolutionPlot
 from ClusteringFitness import ClusteringFitness
 from utils import generate_point_cloud_with_optimum, plot_points_da
 
@@ -31,27 +31,31 @@ if __name__ == '__main__':
                                          n_clusters=n_clusters,
                                          T=1)
 
-    ES = EvolutionStrategy(individual_dimension=n_clusters*dim,
-                           fitness_function=fitness_function,
-                           tgt_fitness=-1.1*minJ,
-                           max_eval=2e5,
-                           _eps0=1e-3,
-                           _lambda=500,
-                           _mu=20,
-                           _tau1=.8,
-                           _tau2=.5,
-                           filename='teste',
-                           x_lim=(-X_limit, X_limit))
+    potential_fitness_function = ClusteringFitness(X=X,
+                                                   n_clusters=n_clusters,
+                                                   T=1)
+
+    ES = EvolutionStrategyMemeticClustering(individual_dimension=n_clusters*dim,
+                                            n_clusters=n_clusters,
+                                            fitness_function=fitness_function,
+                                            potential_fitness_function=fitness_function,
+                                            tgt_fitness=-1.1*minJ,
+                                            max_eval=2e5,
+                                            _eps0=1e-3,
+                                            _lambda=500,
+                                            _mu=20,
+                                            _tau1=.8,
+                                            _tau2=.5,
+                                            epoch=100,
+                                            filename='teste',
+                                            x_lim=(-X_limit, X_limit))
 
     result = ES.run()
-    GAEvolutionPlot(ES.iter_register.file_name).plot_evolution()
+    GAEvolutionPlot(ES.iter_register.complete_filename).plot_evolution()
     Ybest = fitness_function.decode_idv(result['best_idv']).cpu()
-    Yf = fitness_function.decode_idv(result['final_gen_best_idv']).cpu()
 
     plot_points_da(data_vectors=X.cpu(), Y=Ybest, title='best_ever_idv {}'.format(n_clusters), with_voronoi=True)
     plot_points_da(data_vectors=X.cpu(), Y=Ybest, title='best_ever_idv {}'.format(n_clusters), with_voronoi=False)
-    plot_points_da(data_vectors=X.cpu(), Y=Yf, title='best_final_idv {}'.format(n_clusters), with_voronoi=True)
-    plot_points_da(data_vectors=X.cpu(), Y=Yf, title='best_final_idv {}'.format(n_clusters), with_voronoi=False)
 
     print(result)
     print('Min J: ', -minJ)

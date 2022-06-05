@@ -6,7 +6,7 @@ from .DetSurvivorSelectionMCLWithMigration import DetSurvivorsSelectionMCLWithMi
 from .DiscreteXUniformSWithIslandConst import DiscreteXUniformSWithIslandConst
 from .Register import GARegister, DataPrep, FinalResultProcessor
 from .FitnessFunctionWithCounter import FitnessFunctionWithCounter
-
+import random
 
 class EvolutionStrategyWithIslandsConst:
     t.set_grad_enabled(False)
@@ -21,13 +21,20 @@ class EvolutionStrategyWithIslandsConst:
                  n_island,
                  migration_period,
                  filename,
+                 dirname=None,
+                 seed=1,
+                 until_max_eval=False,
                  _tau1=None, _tau2=None, _eps0=None, pop0_dispersion=1, x_lim=(-30, 30)):
 
         self.device = "cuda" if t.has_cuda else "cpu"
+        t.manual_seed(seed)
+        np.random.seed(seed)
+        random.seed(seed)
 
         self.individual_dimension = individual_dimension
         self.tgt_fitness = tgt_fitness
         self.max_eval = max_eval
+        self.until_max_eval = until_max_eval
         self._mu = _mu_island * n_island
         self._lambda = _lambda_island * n_island
         self.migration_period = migration_period
@@ -41,14 +48,14 @@ class EvolutionStrategyWithIslandsConst:
         self.population = t.concat((tags_p,
                                     t.normal(0, pop0_dispersion, (self._mu, self.individual_dimension * 2),
                                              device=self.device)),
-                                   axis=1)
+                                   dim=1)
         # self.population_x = self.population[:, 1:self.individual_dimension+1]
         # necessidade de impor diversidade pelas ilhas aqui?
 
         tags_o = (t.arange(self._lambda, device=self.device) % n_island).view(-1, 1)
         self.offspring = t.concat((tags_o,
                                     t.ones((self._lambda, self.individual_dimension * 2), device=self.device)),
-                                    axis=1)
+                                    dim=1)
 
         self.offspring_x = self.offspring[:, 1:self.individual_dimension+1]
 
@@ -77,18 +84,20 @@ class EvolutionStrategyWithIslandsConst:
                                                                          offspring=self.offspring,
                                                                          migration_period=migration_period,
                                                                          n_island=n_island)
-
+        # algo_name = 'ES{}Island'.format(n_island),
         self.data_processor = DataPrep(population=self.offspring,
                                        fitness=self.offspring_fitness)
 
         self.iter_register = GARegister(filename=filename,
+                                        dir_name=dirname,
                                         algo_name='ES{}Island'.format(n_island),
-                                        data_header=['gen_n', 'eval_counter', 'iter_time', 'gen_best_fit',
-                                                     'gen_best_idv', 'gen_mean_fit', 'gen_worst_fit'])
+                                        data_header=self.data_processor.header)
 
         self.final_result_registry = FinalResultProcessor(offspring_fitness=self.offspring_fitness,
-                                                          tgt_fitness=self.tgt_fitness)
-
+                                                          tgt_fitness=self.tgt_fitness,
+                                                          seed=seed,
+                                                          _lambda=self._lambda,
+                                                          _mu=self._mu)
     def run(self):
         gen_n = 0
         while self.fitness_function.counter < self.max_eval:
@@ -103,7 +112,8 @@ class EvolutionStrategyWithIslandsConst:
             # self.sigma_control.update_sigma(gen_n)
 
             if t.mean(self.offspring_fitness) >= self.tgt_fitness:
-                break
+                if not self.until_max_eval:
+                    break
             gen_n += 1
 
         self.final_result_registry.process_finnish(iter_result)

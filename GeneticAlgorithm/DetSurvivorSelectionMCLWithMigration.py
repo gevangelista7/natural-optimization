@@ -2,7 +2,12 @@ import torch as t
 
 
 class DetSurvivorsSelectionMCLWithMigration:
-    def __init__(self, offspring_fitness, survivors, offspring, n_island, migration_period):
+    def __init__(self,
+                 offspring_fitness,
+                 survivors,
+                 offspring,
+                 n_island,
+                 migration_period):
         self.offspring_fitness = offspring_fitness
         self.survivors = survivors
         self.n_survivors = survivors.shape[0]

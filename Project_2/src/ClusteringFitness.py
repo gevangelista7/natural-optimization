@@ -37,14 +37,14 @@ class ClusteringFitness(FitnessFunctionWithCounter):
         dx = self.X.expand(self.n_y, self.n_x, self.dim)
         dy = self.popY.expand(self.n_x, self.n_pop, self.n_y, self.dim).transpose(0, 1).transpose(1, 2)
 
-        d_xy = t.sum((dy - dx) ** 2, axis=-1)
+        d_xy = t.sum((dy - dx) ** 2, dim=-1)
 
         p_yx = t.exp(- d_xy / self.T)
         p_yx.clamp_min_(1e-45)
 
-        Z_x = t.sum(p_yx, axis=1)
+        Z_x = t.sum(p_yx, dim=1)
 
-        J = - self.T / self.n_x * t.sum(t.log(Z_x), axis=-1)
+        J = - self.T / self.n_x * t.sum(t.log(Z_x), dim=-1)
         self.fitness_array.copy_(-J.unsqueeze(1))
 
     def link(self, evaluation_population: t.Tensor, fitness_array: t.Tensor):

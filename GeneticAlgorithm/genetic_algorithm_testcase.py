@@ -2,6 +2,7 @@
 import unittest
 import torch as t
 from GLAStep import GLAStep
+from utils import plot_points_da
 from utils import generate_point_cloud_with_optimum
 from MutationMCL import MutationMCL
 from MutationMPL import MutationMPL
@@ -13,7 +14,8 @@ from BinaryMutationInt import BinaryMutationInt
 from BinaryMutationVec import BinaryMutationVec
 from UniformCrossoverVec import UniformCrossoverVec
 from DetSurvivorSelectionMCLWithMigration import DetSurvivorsSelectionMCLWithMigration
-
+from GLAStep import GLAStep
+from GeneralizedLloydAlgorithm import GeneralizedLloydAlgorithm
 
 t.no_grad()
 class FitnessFunction:
@@ -185,11 +187,24 @@ class GLAStepTest(unittest.TestCase):
     X, _, _, _ = generate_point_cloud_with_optimum(n_clusters=n_cluster, core_points=10)
     X = t.tensor(X)
     Y = t.normal(0, 1, (8, 4, 2))
-    final = t.empty(Y.shape)
+    final = t.zeros(Y.shape)
 
     stepper = GLAStep(data_vector=X, n_clusters=n_cluster, original=Y, neighbor=final)
+    print(final)
     stepper.update_neighbors()
+    print(final)
 
+class TesteGLA(unittest.TestCase):
+    def test_function(self):
+        n_clusters = 5
+        X, _, _, _, _ = generate_point_cloud_with_optimum(n_clusters=n_clusters,
+                                                          core_points=50)
+        X = t.tensor(X)
+        gla = GeneralizedLloydAlgorithm(n_clusters=n_clusters,
+                                        X=X)
 
-
+        plot_points_da(data_vectors=X.cpu(),
+                       Y=gla.clusters,
+                       title='best_ever_idv {}'.format(n_clusters),
+                       with_voronoi=True)
 

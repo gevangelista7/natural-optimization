@@ -12,14 +12,12 @@ class SigmaControlRechemberg:
 
     def update_sigma(self, gen_n):
         if gen_n % self.period == 0:
-            print('gen ', gen_n, 'sigma update: ')
             ps = sum((self.fitness_array > self.last_best_fitness).int())/len(self.fitness_array)
             self.last_best_fitness = t.max(self.fitness_array)
             if ps > .2:
                 self.mutation.x_normal_std /= self.c
             elif ps < .2:
                 self.mutation.x_normal_std *= self.c
-            print(self.mutation.x_normal_std)
 
 
 class SigmaControlIterN:
