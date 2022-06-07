@@ -96,7 +96,7 @@ class FinalResultProcessor:
             'best_fit': -np.inf,
             'eval_first_sol': None,
 
-            'tgt_fit': tgt_fitness.item(),
+            'tgt_fit': tgt_fitness,
             'elapsed_time': 0,
 
             'final_eval_counter': 0,

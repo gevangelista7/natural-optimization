@@ -1,3 +1,4 @@
+import numpy as np
 import torch as t
 
 
@@ -15,13 +16,15 @@ class DetSurvivorsSelectionMCLWithMigration:
         self.offspring = offspring
         self.migration_period = migration_period
         self.n_island = n_island
+        self.randomized_islands = np.arange(self.n_island)
 
     def execute(self, iter_n):
         expanded = t.concat((self.offspring_fitness, self.offspring), dim=1)
         expanded = expanded[expanded[:, 0].sort(descending=True)[1]]
 
         if iter_n % self.migration_period == 0:
-            for island in range(self.n_island):
+            np.random.shuffle(self.randomized_islands)
+            for island in self.randomized_islands:
                 for idx_exp in range(expanded.shape[0]):
                     if expanded[idx_exp, 1] == island:
                         expanded[idx_exp, 1] += 1

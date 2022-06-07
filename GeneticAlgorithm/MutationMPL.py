@@ -32,6 +32,6 @@ class MutationMPL:
                                                  self._tau2 * t.normal(0, 1, (self._lambda-self._mu, self.dimension), device=self.device))
         self.offspring_sigma.clamp_(min=self._eps0)
 
-        self.offspring_x.clamp_(min=self.x_lim[0], max=self.x_lim[1])
         self.offspring_x[self._mu:] += self.offspring_sigma[self._mu:] * t.normal(0, 1, (self._lambda-self._mu, self.dimension), device=self.device)
+        self.offspring_x.clamp_(min=self.x_lim[0], max=self.x_lim[1])
 

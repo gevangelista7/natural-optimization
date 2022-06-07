@@ -2,9 +2,10 @@
 import torch as t
 from itertools import product
 from random import randint
-from GeneticAlgorithm import EvolutionStrategy
+from GeneticAlgorithm import EvolutionStrategy, FitnessFunctionWithCounter
 from GeneticAlgorithm import GARegister
 from ClusteringFitness import ClusteringFitness
+from OptimTestFunctions import ackley_t_inv
 from utils import generate_point_cloud_with_optimum, plot_points_da
 
 
@@ -22,24 +23,28 @@ from utils import generate_point_cloud_with_optimum, plot_points_da
 
 t.set_grad_enabled(False)
 
+class AckleyFitness(FitnessFunctionWithCounter):
+    def __init__(self):
+        super(AckleyFitness, self).__init__()
+
+    def fitness_update(self):
+        super(AckleyFitness, self).fitness_update()
+        self.fitness_array.copy_(ackley_t_inv(self.evaluation_population).unsqueeze(1))
 
 if __name__ == '__main__':
 
-    mu_list = [10, 30, 90]
-    lambda_mu_list = [7, 10, 25]
-    max_eval = 5e5
-    dim = 2
-    n_rounds = 35
-    tolerance = .05
-
-    n_clusters = 10
-    core_points = 100
+    mu_list = [20]
+    lambda_mu_list = [25]
+    max_eval = 5e4
+    dim = 50
+    n_rounds = 150
+    tolerance = -.85
 
     algo_name = 'ES'
-    common_path = '../res/' + algo_name + "_NC_{}".format(n_clusters)
+    common_path = '../res/' + algo_name + "_Ackley_{}".format(dim)
 
     results_registry = GARegister(algo_name="ES",
-                                  filename="ES_NC_{}".format(n_clusters),
+                                  filename="ES_Ackley_{}".format(dim),
                                   dir_name=common_path,
                                   data_header=[
                                       'n_gen',
@@ -67,29 +72,20 @@ if __name__ == '__main__':
         i = 0
         while i < n_rounds:
             seed = randint(0, 1e6)
-            X, minJ, minD, centers = generate_point_cloud_with_optimum(n_clusters=n_clusters,
-                                                                       core_points=core_points,
-                                                                       cores_dispersion=n_clusters,
-                                                                       dimension=dim,
-                                                                       T=1)
-            X = t.tensor(X, device='cuda')
-            X_limit = t.max(abs(X))
-            fitness_function = ClusteringFitness(X=X,
-                                                 n_clusters=n_clusters,
-                                                 T=1)
+            fitness_function = AckleyFitness()
 
-            algo = EvolutionStrategy(individual_dimension=n_clusters * dim,
-                                   fitness_function=fitness_function,
-                                   tgt_fitness=- (1+tolerance) * minJ,
-                                   max_eval=max_eval,
-                                   _eps0=1e-3,
-                                   _lambda=_lambda,
-                                   _mu=_mu,
-                                   until_max_eval=True,
-                                   seed=seed,
-                                   dirname=common_path+'/lambda{}mu{}'.format(_lambda, _mu),
-                                   filename='Rodada_{}'.format(i),
-                                   x_lim=(-X_limit, X_limit))
+            algo = EvolutionStrategy(individual_dimension=dim,
+                                     fitness_function=fitness_function,
+                                     tgt_fitness=tolerance,
+                                     max_eval=max_eval,
+                                     _eps0=1e-3,
+                                     _lambda=_lambda,
+                                     _mu=_mu,
+                                     until_max_eval=True,
+                                     seed=seed,
+                                     dirname=common_path+'/lambda{}mu{}'.format(_lambda, _mu),
+                                     filename='Rodada_{}'.format(i)
+                                     )
 
 
             result = algo.run()

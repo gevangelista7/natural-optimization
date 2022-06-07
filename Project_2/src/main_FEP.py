@@ -2,7 +2,7 @@
 import torch as t
 from itertools import product
 from random import randint
-from GeneticAlgorithm import EvolutionStrategyWithIslandsConst
+from GeneticAlgorithm import EvolutionaryProgrammingCauchy
 from GeneticAlgorithm import GARegister
 from ClusteringFitness import ClusteringFitness
 from utils import generate_point_cloud_with_optimum
@@ -25,11 +25,8 @@ t.set_grad_enabled(False)
 
 if __name__ == '__main__':
 
-    mu_list = [10, 30, 90]
-    lambda_mu_list = [7, 10, 25]
-    migration_period_list = [10, 50]
-    n_island_list = [3, 5, 7, 9]
-
+    mu_list = [10, 30, 80]
+    lambda_mu_list = [3, 7, 10, 25]
     max_eval = 5e5
     dim = 2
     n_rounds = 35
@@ -38,11 +35,11 @@ if __name__ == '__main__':
     n_clusters = 10
     core_points = 100
 
-    algo_name = 'ES_multimodal'
-    common_path = "../res/{}_NC_{}".format(algo_name, n_clusters)
+    algo_name = 'FEP'
+    common_path = '../res/' + algo_name + "_NC_{}".format(n_clusters)
 
     results_registry = GARegister(algo_name=algo_name,
-                                  filename="ES_NC_{}".format(n_clusters),
+                                  filename="FEP_NC_{}".format(n_clusters),
                                   dir_name=common_path,
                                   data_header=[
                                       'n_gen',
@@ -60,16 +57,13 @@ if __name__ == '__main__':
                                       'seed',
                                       
                                       'lambda',
-                                      'mu',
-                                      'n_island',
-                                      'migration_period'
+                                      'mu'
                                   ])
 
-    def test_ES_multimodal(params):
+    def test_FEP(params, i):
         _mu = params[0]
         _lambda = _mu * params[1]
-        n_island = params[2]
-        migration_period = params[3]
+        print('Teste mu={}, lambda={}'.format(_mu, _lambda))
 
         seed = randint(0, 1e6)
         X, minJ, minD, centers = generate_point_cloud_with_optimum(n_clusters=n_clusters,
@@ -83,44 +77,34 @@ if __name__ == '__main__':
                                              n_clusters=n_clusters,
                                              T=1)
 
-        algo = EvolutionStrategyWithIslandsConst(individual_dimension=n_clusters * dim,
-                                                 fitness_function=fitness_function,
-                                                 tgt_fitness=- (1 + tolerance) * minJ,
-                                                 max_eval=max_eval,
-                                                 _eps0=1e-3,
-                                                 _lambda_island=_lambda,
-                                                 _mu_island=_mu,
-                                                 n_island=n_island,
-                                                 migration_period=migration_period,
-                                                 until_max_eval=True,
-                                                 seed=seed,
-                                                 dirname=common_path + '/lambda{}mu{}n_island{}m_period{}'
-                                                 .format(_lambda, _mu, n_island, migration_period),
-                                                 filename='Rodada_{}'.format(i),
-                                                 x_lim=(-X_limit, X_limit))
+        algo = EvolutionaryProgrammingCauchy(individual_dimension=n_clusters * dim,
+                                             fitness_function=fitness_function,
+                                             tgt_fitness=- (1 + tolerance) * minJ,
+                                             max_eval=max_eval,
+                                             _eps0=1e-3,
+                                             _lambda=_lambda,
+                                             _mu=_mu,
+                                             _tau2=.01,
+                                             until_max_eval=True,
+                                             seed=seed,
+                                             dirname=common_path + '/lambda{}mu{}'.format(_lambda, _mu),
+                                             filename='Rodada_{}'.format(i),
+                                             x_lim=(-X_limit, X_limit),
+                                             device='cuda')
 
         result = algo.run()
-        result['n_island'] = n_island
-        result['migration_period'] = migration_period
         results_registry.data_entry([result])
 
         return result
 
-    for params in product(mu_list, lambda_mu_list, n_island_list, migration_period_list):
-        result = test_ES_multimodal(params)
+
+    for params in product(mu_list, lambda_mu_list):
+        i = 0
+        result = test_FEP(params, i)
 
         if result['success'] is True:
-            i = 0
             while i < n_rounds:
-                test_ES_multimodal(params)
+                test_FEP(params, i)
                 i += 1
-
-
-
-
-
-
-
-
 
 

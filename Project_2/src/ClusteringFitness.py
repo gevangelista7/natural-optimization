@@ -48,7 +48,8 @@ class ClusteringFitness(FitnessFunctionWithCounter):
         self.fitness_array.copy_(-J.unsqueeze(1))
 
     def link(self, evaluation_population: t.Tensor, fitness_array: t.Tensor):
-        super().link(evaluation_population=evaluation_population, fitness_array=fitness_array)
+        super().link(evaluation_population=evaluation_population,
+                     fitness_array=fitness_array)
         self.n_pop = evaluation_population.shape[0]
         self.decode()
 

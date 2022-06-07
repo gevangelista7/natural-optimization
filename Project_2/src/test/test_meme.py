@@ -44,9 +44,9 @@ if __name__ == '__main__':
                                             _eps0=1e-3,
                                             _lambda=500,
                                             _mu=20,
-                                            _tau1=.8,
-                                            _tau2=.5,
-                                            epoch=100,
+                                            # _tau1=.8,
+                                            # _tau2=.5,
+                                            epoch=10000,
                                             filename='teste',
                                             x_lim=(-X_limit, X_limit))
 

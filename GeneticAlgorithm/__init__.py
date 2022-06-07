@@ -1,5 +1,6 @@
 from .EvolutionStrategy import EvolutionStrategy
 from .EvolutionaryProgramming import EvolutionaryProgramming
+from .EvolutionaryProgrammingCauchy import EvolutionaryProgrammingCauchy
 from .MutationMCL import MutationMCL
 from .MutationMPL import MutationMPL
 from .DiscreteXUniformS import DiscreteXUniformS
@@ -17,7 +18,7 @@ from .EvolutionStrategyWithIslandsConst import EvolutionStrategyWithIslandsConst
 from .EvolutionStrategyWithIslandsVar import EvolutionStrategyWithIslandsVar
 from .DetSurvivorSelectionMCLWithMigration import DetSurvivorsSelectionMCLWithMigration
 # from .EvolutionStrategyMemeticClustering import EvolutionStrategyMemeticClustering
-from .EvolutionStrategyMemeticClustering_v2 import EvolutionStrategyMemeticClustering
+from .EvolutionStrategyMemeticClustering import EvolutionStrategyMemeticClustering
 from .FitnessFunctionWithCounter import FitnessFunctionWithCounter
 from .GLAStep import GLAStep
 from .GeneralizedLloydAlgorithm import GeneralizedLloydAlgorithm
@@ -29,5 +30,5 @@ __all__ = ['EvolutionStrategy', 'EvolutionaryProgramming', 'MutationMCL', 'DetSu
            'StandardGeneticAlgorithmVec', 'EvolutionStrategyParameterControl', 'EvolutionStrategyWithIslandsConst',
            'DetSurvivorsSelectionMCLWithMigration', 'EvolutionStrategyWithIslandsVar',
            'EvolutionStrategyMemeticClustering', 'GLAStep', 'GeneralizedLloydAlgorithm', 'FitnessFunctionWithCounter',
-           'EvolutionStrategyWithBoundaryReset']
+           'EvolutionStrategyWithBoundaryReset', 'EvolutionaryProgrammingCauchy']
 

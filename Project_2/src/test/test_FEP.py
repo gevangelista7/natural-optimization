@@ -1,6 +1,5 @@
-
 import torch as t
-from GeneticAlgorithm import GAEvolutionPlot, EvolutionStrategyWithIslandsConst
+from GeneticAlgorithm import EvolutionaryProgrammingCauchy, GAEvolutionPlot
 from ClusteringFitness import ClusteringFitness
 from utils import generate_point_cloud_with_optimum, plot_points_da
 
@@ -26,33 +25,32 @@ if __name__ == '__main__':
                                                                cores_dispersion=n_clusters,
                                                                dimension=dim,
                                                                T=1)
-
     X = t.tensor(X, device='cuda')
     X_limit = t.max(abs(X))
     fitness_function = ClusteringFitness(X=X,
                                          n_clusters=n_clusters,
                                          T=1)
 
-    ES = EvolutionStrategyWithIslandsConst(individual_dimension=n_clusters * dim,
-                                           fitness_function=fitness_function,
-                                           tgt_fitness=-1.1*minJ,
-                                           max_eval=1e6,
-                                           _eps0=1e-3,
-                                           _mu_island=20,
-                                           _lambda_island=500,
-                                           n_island=8,
-                                           migration_period=20,
-                                           _tau1=.5,
-                                           _tau2=.8,
-                                           filename='teste',
-                                           x_lim=(-X_limit, X_limit))
+    EP = EvolutionaryProgrammingCauchy(individual_dimension=n_clusters*dim,
+                                       fitness_function=fitness_function,
+                                       tgt_fitness=-1.1*minJ,
+                                       max_eval=1e6,
+                                       _eps0=1e-3,
+                                       _lambda=30,
+                                       _mu=10,
+                                       # _tau1=.8,
+                                       _tau2=.01,
+                                       filename='teste',
+                                       x_lim=(-X_limit, X_limit),
+                                       device='cuda',
+                                       )
 
-    result = ES.run()
-    plotter = GAEvolutionPlot(ES.iter_register.complete_filename)
-    plotter.title = "ES - Ilhas - NC=20"
+    result = EP.run()
+    plotter = GAEvolutionPlot(EP.iter_register.complete_filename)
+    plotter.title = "FEP - NC=20"
     plotter.plot_evolution()
 
-    Ybest = fitness_function.decode_idv(result['best_idv'][1:dim*n_clusters+1]).cpu()
+    Ybest = fitness_function.decode_idv(result['best_idv']).cpu()
 
     # plot_points_da(data_vectors=X.cpu(), Y=Ybest, title='best_ever_idv {}'.format(n_clusters), with_voronoi=True)
     plot_points_da(data_vectors=X.cpu(), Y=Ybest, title='best_ever_idv {}'.format(n_clusters), with_voronoi=False)
