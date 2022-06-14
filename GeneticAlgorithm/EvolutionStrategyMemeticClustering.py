@@ -75,13 +75,18 @@ class EvolutionStrategyMemeticClustering:
         self.fitness_function.link(evaluation_population=self.offspring_x,
                                    fitness_array=self.offspring_fitness)
 
-        self.potential_fitness_function = potential_fitness_function
-        # self.potential_fitness_function.link(evaluation_population=self.best_neighbors_x,
-        #                                      fitness_array=self.offspring_fitness)
+        self.survivors_selection_ofsp = DetSurvivorsSelectionMCL(offspring_fitness=self.offspring_fitness,
+                                                                 survivors=self.population,
+                                                                 children=self.offspring)
 
-        self.survivors_selection = DetSurvivorsSelectionMCL(offspring_fitness=self.offspring_fitness,
-                                                            survivors=self.population,
-                                                            children=self.offspring)
+        self.neighbors_fitness = t.empty((_lambda, 1), device=self.device)
+        self.potential_fitness_function = potential_fitness_function
+        self.potential_fitness_function.link(evaluation_population=self.best_neighbors_x,
+                                             fitness_array=self.neighbors_fitness)
+
+        self.survivors_selection_ngbr = DetSurvivorsSelectionMCL(offspring_fitness=self.neighbors_fitness,
+                                                                 survivors=self.population,
+                                                                 children=self.offspring)
 
         self.neighbors_updater = GLAStep(data_vector=self.fitness_function.X,
                                          original=self.offspring_x,
@@ -100,7 +105,7 @@ class EvolutionStrategyMemeticClustering:
                                         data_header=self.data_processor.header)
 
         self.final_result_registry = FinalResultProcessor(offspring_fitness=self.offspring_fitness,
-                                                          tgt_fitness=self.tgt_fitness,
+                                                          tgt_fitness=self.tgt_fitness.item(),
                                                           seed=seed,
                                                           _lambda=_lambda,
                                                           _mu=_mu)
@@ -111,13 +116,13 @@ class EvolutionStrategyMemeticClustering:
         while eval_counter < self.max_eval:
             self.recombination.execute()
             self.mutation.execute()
-            # if gen_n % self.epoch == 0:
-            #     # self.neighbors_updater.update_neighbors()
-            #     # self.potential_fitness_function.fitness_update()
-            # else:
             self.fitness_function.fitness_update()
-
-            self.survivors_selection.execute()
+            if gen_n % self.epoch == 0:
+                self.neighbors_updater.update_neighbors()
+                self.potential_fitness_function.fitness_update()
+                self.survivors_selection_ngbr.execute()
+            else:
+                self.survivors_selection_ofsp.execute()
             #
             # self.sigma_control.update_sigma(gen_n)
 

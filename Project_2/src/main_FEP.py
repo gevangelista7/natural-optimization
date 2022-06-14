@@ -25,21 +25,28 @@ t.set_grad_enabled(False)
 
 if __name__ == '__main__':
 
-    mu_list = [10, 30, 80]
-    lambda_mu_list = [3, 7, 10, 25]
+    n_clusters = 5
+
+    # mu_list = [10, 30, 60]
+    # lambda_mu_list = [3, 5, 7, 10]
+    # n_rounds = 10
+
+    mu_list = [10]
+    lambda_mu_list = [3]
+    n_rounds = 35
+
+
     max_eval = 5e5
     dim = 2
-    n_rounds = 35
     tolerance = .05
 
-    n_clusters = 10
     core_points = 100
 
     algo_name = 'FEP'
     common_path = '../res/' + algo_name + "_NC_{}".format(n_clusters)
 
     results_registry = GARegister(algo_name=algo_name,
-                                  filename="FEP_NC_{}".format(n_clusters),
+                                  filename="FEPtau2red_NC_{}".format(n_clusters),
                                   dir_name=common_path,
                                   data_header=[
                                       'n_gen',
@@ -63,7 +70,7 @@ if __name__ == '__main__':
     def test_FEP(params, i):
         _mu = params[0]
         _lambda = _mu * params[1]
-        print('Teste mu={}, lambda={}'.format(_mu, _lambda))
+        print('Teste mu={}, lambda={} / i={}'.format(_mu, _lambda, i))
 
         seed = randint(0, 1e6)
         X, minJ, minD, centers = generate_point_cloud_with_optimum(n_clusters=n_clusters,
@@ -84,7 +91,6 @@ if __name__ == '__main__':
                                              _eps0=1e-3,
                                              _lambda=_lambda,
                                              _mu=_mu,
-                                             _tau2=.01,
                                              until_max_eval=True,
                                              seed=seed,
                                              dirname=common_path + '/lambda{}mu{}'.format(_lambda, _mu),
@@ -99,10 +105,9 @@ if __name__ == '__main__':
 
 
     for params in product(mu_list, lambda_mu_list):
-        i = 0
-        result = test_FEP(params, i)
-
+        result = test_FEP(params, 0)
         if result['success'] is True:
+            i = 1
             while i < n_rounds:
                 test_FEP(params, i)
                 i += 1

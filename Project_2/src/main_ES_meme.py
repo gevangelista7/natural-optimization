@@ -25,23 +25,30 @@ t.set_grad_enabled(False)
 
 if __name__ == '__main__':
 
-    mu_list = [10, 30, 60, 90]
-    lambda_mu_list = [3, 7, 10, 25]
-    epoch_list = [5, 10, 50, 100]
+    n_clusters = 5
+
+    # mu_list = [30, 60]
+    # lambda_mu_list = [3, 5, 7, 10]
+    # epoch_list = [5, 10, 50]
+    # n_rounds = 10
+
+    mu_list = [30]
+    lambda_mu_list = [3]
+    epoch_list = [5]
+    n_rounds = 90
 
     max_eval = 5e5
     dim = 2
-    n_rounds = 35
+
     tolerance = .05
 
-    n_clusters = 10
     core_points = 100
 
-    algo_name = 'ES_meme'
+    algo_name = 'ESmeme'
     common_path = "../res/{}_NC_{}".format(algo_name, n_clusters)
 
-    results_registry = GARegister(algo_name="ES",
-                                  filename="ES_NC_{}".format(n_clusters),
+    results_registry = GARegister(algo_name="ESmeme",
+                                  filename="ESmeme_NC_{}".format(n_clusters),
                                   dir_name=common_path,
                                   data_header=[
                                       'n_gen',
@@ -66,7 +73,7 @@ if __name__ == '__main__':
     def test_ES_meme(params, i):
         _mu, _lambda_mu, _epoch = params
         _lambda = _mu * _lambda_mu
-        print('Testing: mu={} lambda={} epoch={}'.format(_mu, _lambda, _epoch))
+        print('Testing: mu={} lambda={} epoch={} / i={} '.format(_mu, _lambda, _epoch, i))
         seed = randint(0, 1e6)
         X, minJ, minD, centers = generate_point_cloud_with_optimum(n_clusters=n_clusters,
                                                                    core_points=core_points,
@@ -93,6 +100,7 @@ if __name__ == '__main__':
                                                   _eps0=1e-3,
                                                   _lambda=_lambda,
                                                   _mu=_mu,
+                                                  # _tau1=.45,
                                                   epoch=_epoch,
                                                   until_max_eval=True,
                                                   seed=seed,

@@ -25,24 +25,31 @@ t.set_grad_enabled(False)
 
 if __name__ == '__main__':
 
-    mu_list = [10, 30, 90]
-    lambda_mu_list = [7, 10, 25]
+    n_clusters = 20
+
+    mu_list = [60]
+    lambda_mu_list = [7, 5]
     migration_period_list = [10, 50]
-    n_island_list = [3, 5, 7, 9]
+    n_island_list = [5, 9]
+    n_rounds = 10
+
+    # mu_list = [60]
+    # lambda_mu_list = [3]
+    # migration_period_list = [10]
+    # n_island_list = [5]
+    # n_rounds = 90
 
     max_eval = 5e5
     dim = 2
-    n_rounds = 35
     tolerance = .05
 
-    n_clusters = 10
     core_points = 100
 
-    algo_name = 'ES_multimodal'
+    algo_name = 'ESmultimodal'
     common_path = "../res/{}_NC_{}".format(algo_name, n_clusters)
 
     results_registry = GARegister(algo_name=algo_name,
-                                  filename="ES_NC_{}".format(n_clusters),
+                                  filename="ESmultimodal_NC_{}".format(n_clusters),
                                   dir_name=common_path,
                                   data_header=[
                                       'n_gen',
@@ -62,15 +69,20 @@ if __name__ == '__main__':
                                       'lambda',
                                       'mu',
                                       'n_island',
-                                      'migration_period'
+                                      'epoch'
                                   ])
 
-    def test_ES_multimodal(params):
+    def test_ES_multimodal(params, i):
+        n_island = params[2]
+        _mu = int(params[0]/n_island)
         _mu = params[0]
         _lambda = _mu * params[1]
-        n_island = params[2]
-        migration_period = params[3]
+        _epoch = params[3]
 
+        if _mu < 8:
+            return {'success': False}
+
+        print('Testing: mu={} lambda={} epoch={} n_island={} / i={}'.format(_mu, _lambda, _epoch, n_island, i))
         seed = randint(0, 1e6)
         X, minJ, minD, centers = generate_point_cloud_with_optimum(n_clusters=n_clusters,
                                                                    core_points=core_points,
@@ -90,37 +102,29 @@ if __name__ == '__main__':
                                                  _eps0=1e-3,
                                                  _lambda_island=_lambda,
                                                  _mu_island=_mu,
+                                                 _tau1=.45,
                                                  n_island=n_island,
-                                                 migration_period=migration_period,
+                                                 migration_period=_epoch,
                                                  until_max_eval=True,
                                                  seed=seed,
                                                  dirname=common_path + '/lambda{}mu{}n_island{}m_period{}'
-                                                 .format(_lambda, _mu, n_island, migration_period),
+                                                 .format(_lambda, _mu, n_island, _epoch),
                                                  filename='Rodada_{}'.format(i),
                                                  x_lim=(-X_limit, X_limit))
 
         result = algo.run()
         result['n_island'] = n_island
-        result['migration_period'] = migration_period
+        result['epoch'] = _epoch
         results_registry.data_entry([result])
 
         return result
 
     for params in product(mu_list, lambda_mu_list, n_island_list, migration_period_list):
-        result = test_ES_multimodal(params)
+        result = test_ES_multimodal(params, 0)
 
-        if result['success'] is True:
-            i = 0
-            while i < n_rounds:
-                test_ES_multimodal(params)
-                i += 1
-
-
-
-
-
-
-
-
-
+        # if result['success'] is True:
+        i = 1
+        while i < n_rounds:
+            test_ES_multimodal(params, i)
+            i += 1
 

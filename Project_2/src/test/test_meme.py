@@ -38,24 +38,24 @@ if __name__ == '__main__':
     ES = EvolutionStrategyMemeticClustering(individual_dimension=n_clusters*dim,
                                             n_clusters=n_clusters,
                                             fitness_function=fitness_function,
-                                            potential_fitness_function=fitness_function,
+                                            potential_fitness_function=potential_fitness_function,
                                             tgt_fitness=-1.1*minJ,
                                             max_eval=2e5,
                                             _eps0=1e-3,
-                                            _lambda=500,
+                                            _lambda=200,
                                             _mu=20,
                                             # _tau1=.8,
                                             # _tau2=.5,
-                                            epoch=10000,
-                                            filename='teste',
+                                            epoch=100,
+                                            filename='teste_ES_meme',
                                             x_lim=(-X_limit, X_limit))
 
     result = ES.run()
     GAEvolutionPlot(ES.iter_register.complete_filename).plot_evolution()
     Ybest = fitness_function.decode_idv(result['best_idv']).cpu()
 
-    plot_points_da(data_vectors=X.cpu(), Y=Ybest, title='best_ever_idv {}'.format(n_clusters), with_voronoi=True)
-    plot_points_da(data_vectors=X.cpu(), Y=Ybest, title='best_ever_idv {}'.format(n_clusters), with_voronoi=False)
+    # plot_points_da(data_vectors=X.cpu(), Y=Ybest, title='best_ever_idv {}'.format(n_clusters), with_voronoi=True)
+    plot_points_da(data_vectors=X.cpu(), Y=Ybest, title='best_ever_idv {} ES - Meme'.format(n_clusters), with_voronoi=False)
 
     print(result)
     print('Min J: ', -minJ)

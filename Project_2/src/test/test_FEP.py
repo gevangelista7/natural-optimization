@@ -18,7 +18,7 @@ from utils import generate_point_cloud_with_optimum, plot_points_da
 if __name__ == '__main__':
     t.set_grad_enabled(False)
 
-    n_clusters = 20
+    n_clusters = 10
     dim = 2
     X, minJ, minD, centers = generate_point_cloud_with_optimum(n_clusters=n_clusters,
                                                                core_points=100,
@@ -38,8 +38,8 @@ if __name__ == '__main__':
                                        _eps0=1e-3,
                                        _lambda=30,
                                        _mu=10,
-                                       # _tau1=.8,
-                                       _tau2=.01,
+                                       # _tau1=.45,
+                                       _tau2=0.01,
                                        filename='teste',
                                        x_lim=(-X_limit, X_limit),
                                        device='cuda',

@@ -19,6 +19,8 @@ from .EvolutionStrategyWithIslandsVar import EvolutionStrategyWithIslandsVar
 from .DetSurvivorSelectionMCLWithMigration import DetSurvivorsSelectionMCLWithMigration
 # from .EvolutionStrategyMemeticClustering import EvolutionStrategyMemeticClustering
 from .EvolutionStrategyMemeticClustering import EvolutionStrategyMemeticClustering
+from .StandardGeneticAlgorithmMultiObj import StandardGeneticAlgorithmMultiObj
+from .StandardGeneticAlgorithmMultiObj2 import StandardGeneticAlgorithmMultiObj2
 from .FitnessFunctionWithCounter import FitnessFunctionWithCounter
 from .GLAStep import GLAStep
 from .GeneralizedLloydAlgorithm import GeneralizedLloydAlgorithm
@@ -30,5 +32,6 @@ __all__ = ['EvolutionStrategy', 'EvolutionaryProgramming', 'MutationMCL', 'DetSu
            'StandardGeneticAlgorithmVec', 'EvolutionStrategyParameterControl', 'EvolutionStrategyWithIslandsConst',
            'DetSurvivorsSelectionMCLWithMigration', 'EvolutionStrategyWithIslandsVar',
            'EvolutionStrategyMemeticClustering', 'GLAStep', 'GeneralizedLloydAlgorithm', 'FitnessFunctionWithCounter',
-           'EvolutionStrategyWithBoundaryReset', 'EvolutionaryProgrammingCauchy']
+           'EvolutionStrategyWithBoundaryReset', 'EvolutionaryProgrammingCauchy', 'StandardGeneticAlgorithmMultiObj',
+           'StandardGeneticAlgorithmMultiObj2']
 
