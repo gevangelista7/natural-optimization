@@ -154,7 +154,7 @@ if __name__ == "__main__":
         f.suptitle('NC='+nc)
         f.tight_layout()
         # plt.show()
-        plt.savefig("../img/NC={}".format(nc))
+        # plt.savefig("../img/NC={}".format(nc))
 
     sns.set_theme(style="whitegrid")
     f, axes = plt.subplots(1, 3)
@@ -192,5 +192,5 @@ if __name__ == "__main__":
         ax.grid()
 
     # plt.show()
-    plt.savefig("../img/criteria_behavior_with_nc")
+    # plt.savefig("../img/criteria_behavior_with_nc")
 

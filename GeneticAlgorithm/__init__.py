@@ -24,6 +24,7 @@ from .StandardGeneticAlgorithmMultiObj2 import StandardGeneticAlgorithmMultiObj2
 from .FitnessFunctionWithCounter import FitnessFunctionWithCounter
 from .GLAStep import GLAStep
 from .GeneralizedLloydAlgorithm import GeneralizedLloydAlgorithm
+from .BinaryMutationVec import BinaryMutationVec
 
 
 __all__ = ['EvolutionStrategy', 'EvolutionaryProgramming', 'MutationMCL', 'DetSurvivorsSelectionMCL',
@@ -33,5 +34,5 @@ __all__ = ['EvolutionStrategy', 'EvolutionaryProgramming', 'MutationMCL', 'DetSu
            'DetSurvivorsSelectionMCLWithMigration', 'EvolutionStrategyWithIslandsVar',
            'EvolutionStrategyMemeticClustering', 'GLAStep', 'GeneralizedLloydAlgorithm', 'FitnessFunctionWithCounter',
            'EvolutionStrategyWithBoundaryReset', 'EvolutionaryProgrammingCauchy', 'StandardGeneticAlgorithmMultiObj',
-           'StandardGeneticAlgorithmMultiObj2']
+           'StandardGeneticAlgorithmMultiObj2', 'BinaryMutationVec']
 

@@ -20,31 +20,35 @@
 			\item ES - Memético - Baldwin GLA
 			\item Evolutionary Programming (EP)
 			\item EP - Distribuição de Cauchy (FEP)
-		\end{itemize}
-	
-	
-		\textbf{Metodologia:}
-		\begin{itemize}
-				\item Parâmetros variados comuns:
-				\begin{itemize}
-					\item $ \mu \in \{10, 30, 60\} $ 
-					\item $ \lambda/\mu \in \{3, 5, 7, 10\} $
-				\end{itemize}
-				\item Parâmetros variados específicos:
-				\begin{itemize}
-					\item Multimodal:
-					\begin{itemize}
-						\item $ epoch \in \{10, 50\} $
-						\item $ n_{island} \in \{3, 5, 7, 9\} $
-					\end{itemize}
-					\item Memético: $ epoch \in \{5, 10, 50\} $
-					
-				\end{itemize}				
+	\end{itemize}
 
-		\end{itemize}
+	\begin{figure}
+		\includegraphics[width=.7\columnwidth]{img/ES_NC20_exemplo.png}
+	\end{figure}	
+	
+
+%		\begin{itemize}
+%				\item Parâmetros variados comuns:
+%				\begin{itemize}
+%					\item $ \mu \in \{10, 30, 60\} $ 
+%					\item $ \lambda/\mu \in \{3, 5, 7, 10\} $
+%				\end{itemize}
+%				\item Parâmetros variados específicos:
+%				\begin{itemize}
+%					\item Multimodal:
+%					\begin{itemize}
+%						\item $ epoch \in \{10, 50\} $
+%						\item $ n_{island} \in \{3, 5, 7, 9\} $
+%					\end{itemize}
+%					\item Memético: $ epoch \in \{5, 10, 50\} $
+%					
+%				\end{itemize}				
+%
+%		\end{itemize}
 
 
 		\column{.55\linewidth}
+		\textbf{Metodologia:}
 		\begin{itemize}
 			\item Limite computacional: $ 5\cdot 10^5 $ avaliações da função custo
 			\item Número de Clusters ($ \mathbb{R}^2 $) $ NC \in \{5, 10, 20\} $
@@ -60,8 +64,22 @@
 	\end{columns}
 \end{frame}
 
+
 \begin{frame}{Resultados}
-		\begin{figure}
+	\begin{figure}
+		\begin{subfigure}[t]{\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{img/criteria_behavior_with_nc.png}
+		\end{subfigure}
+		\begin{subfigure}[t]{\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{img/tabela_resumo.png}
+		\end{subfigure}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Resultados}
+	\begin{figure}
 		\begin{subfigure}[t]{\textwidth}
 			\centering
 			\includegraphics[scale=0.23]{img/NC=5.png}
@@ -77,18 +95,6 @@
 	\end{figure}
 \end{frame}
 
-\begin{frame}{Resultados}
-	\begin{figure}
-		\begin{subfigure}[t]{\textwidth}
-			\centering
-			\includegraphics[width=\textwidth]{img/criteria_behavior_with_nc.png}
-		\end{subfigure}
-		\begin{subfigure}[t]{\textwidth}
-			\centering
-			\includegraphics[width=\textwidth]{img/tabela_resumo.png}
-		\end{subfigure}
-	\end{figure}
-\end{frame}
 
 \begin{frame}{Conclusões}
 	\begin{itemize}

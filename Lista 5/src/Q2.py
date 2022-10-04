@@ -68,8 +68,8 @@ if __name__ == '__main__':
 
     n_dim = 2
     n_bit = 16
-    n_population = 40
-    n_island = 40
+    n_population = 32
+    n_island = 64
 
     f1 = FitnessF1(n_dim=n_dim,
                    n_bit=n_bit,
@@ -84,16 +84,16 @@ if __name__ == '__main__':
     GA = StandardGeneticAlgorithmMultiObj2(dimension=n_dim * n_bit,
                                            n_population=n_population,
 
-                                           mutation_rate=.8,
-                                           n_bit_mutate=8,
-                                           epoch=11,
+                                           mutation_rate=.5,
+                                           n_bit_mutate=4,
+                                           epoch=30,
                                            n_migrant=4,
                                            n_islands=n_island,
 
                                            fitness_function1=f1,
                                            fitness_function2=f2,
 
-                                           max_ite=3e2)
+                                           max_ite=3000)
     pop_result = GA.run()
     val_f1 = t.empty(pop_result.shape[0])
     val_f2 = t.empty(pop_result.shape[0])
@@ -105,14 +105,17 @@ if __name__ == '__main__':
 
 
 
-    plt.scatter(-val_f1, -val_f2)
+    plt.scatter(-val_f1, -val_f2, label='Resultado')
     plt.title(r"Fonseca-Fleming Function ($X \in R^2$)")
     plt.xlabel(r"$f_1(X)$")
     plt.ylabel(r"$f_2(X)$")
-    plt.axis('equal')
 
-    plt.xlim(0, 1.1)
-    plt.ylim(0, 1.1)
+    x = t.linspace(-1, 1, 50).view(-1, 1)
+    plt.plot(func_f1(x), func_f2(x), 'r--', label='Fronteira analítica')
+    plt.xlim(0, 1.2)
+    plt.ylim(0, 1.2)
     plt.grid()
 
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.legend()
     plt.show()

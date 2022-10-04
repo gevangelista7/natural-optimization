@@ -14,7 +14,7 @@ from utils import generate_point_cloud_with_optimum, plot_points_da
 # n_pop:           Number of individuals in population
 # dim:             Number of dimensions
 
-# Y.shape:          ( n_cluster , dim )   >> genotype
+# Y.shape:          ( n_cluster , dim )   >>  genotype
 # popY.shape:       ( n_pop, n_cluster, dim )
 # X.shape:          ( n_cluster * n_points, dim )
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     mu_list = [20]
     lambda_mu_list = [25]
     max_eval = 5e4
-    dim = 50
+    dim = 20
     n_rounds = 150
     tolerance = -.85
 
