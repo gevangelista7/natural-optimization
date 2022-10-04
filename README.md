@@ -1,4 +1,4 @@
 # natural-optimization
-Exercises and projects to assign the natual optimization discipline from UFRJ/PEE.
+Exercises and assignments for discipline CPE723 - Natural Optimization at PEE/UFRJ.
 
-This will include Metropolis Algorithm to generate distributions compliant with some target shape, Simulated Annealing (with variations) and Genetic Algorithms.
+This will include Genetic Algorithms, Metropolis Algorithm (generate distributions compliant with some target shape) and Simulated Annealing (with variations).
